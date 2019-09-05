@@ -1,0 +1,27 @@
+<html> 
+    <head> 
+        <meta charset="UTF-8"> 
+        <title>jquery</title> 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.."></script> 
+    </head> 
+    <body> 
+
+        <div id="placeholder"></div> 
+
+        <script> 
+            $(document).ready(() => { 
+                const url = "http://localhost:5000/api/name"; 
+                let config = { 
+                    "async": true, 
+                    "crossDomain": true, 
+                    "url": url, 
+                    "method": "GET" 
+                }; 
+
+                $.ajax(config).done(response => { 
+                    $("#placeholder").text(response); 
+                }).then(() => {}); 
+            }); 
+        </script> 
+    </body> 
+</html>
