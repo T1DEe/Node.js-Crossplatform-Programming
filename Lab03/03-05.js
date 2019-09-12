@@ -2,11 +2,25 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 
-var factorial = function(n) {
+var factorialTick = function(n) {
     if(n == 0) {
         return 1
     } else {
-        return n * factorial(n - 1);
+        return n * factorialTick(n - 1);
+    }
+}
+
+class Fact {
+    constructor (n, cb) {
+        this.factorial = factorialTick;
+        this.num = n;
+        this.cb = cb;
+    }
+
+    calc() {
+        setImmediate( ()=> {
+            this.cb(null, this.factorial(this.num));
+        });
     }
 }
 
@@ -17,7 +31,10 @@ const server = http.createServer(function (request, response) {
             let k = parseInt(url.parse(request.url, true).query.k);
             if (Number.isInteger(k)) {
                 response.writeHead(200, {'Content-Type' : 'application/json'});
-                response.end(JSON.stringify({ k:k , fact : factorial(k) }));
+                let fact = new Fact(k, (error, result) => {
+                    response.end( JSON.stringify({ k:k , fact : result }) );
+                }) 
+                fact.calc();
             }
         }
     }
