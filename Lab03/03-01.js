@@ -1,5 +1,4 @@
 const http = require('http');
-var readline = require('readline');
 
 const server = http.createServer(function (request, response) {
     response.contentType='text/html';
