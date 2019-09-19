@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>04-02</title>
+    </head>
+
+    <body>
+        <h1>Lab 04-02</h1>  
+        <div id="get_result"></div>
+        <button onclick="Get()">GET</button>
+        <script>
+                function Get() {
+                    fetch('http://localhost:5000/api/db', {
+                        method: 'GET',
+                        headers: {'Content-Type':'application/json'}
+                    })
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(pdata => {
+                        console.log('pdata', pdata);
+                        let get_result = document.getElementById("get_result");
+                        get_result.innerHTML = '';
+                        pdata.forEach(element => {
+                            get_result.innerHTML += (element.id + '.  ' + element.name +
+                             ' ' + element.bday + '<br>');
+                        });
+                    });
+                }
+            </script>
+        <br>
+        <div style="padding: 20px">
+            <div class="row">
+                <label class="col-2">Идентификатор</label>
+                <input type="number" class="col-3" id="ID" min="0"/>
+            </div>
+            <div class="row">
+                    <label class="col-2">ФИО</label>
+                    <input type="text" class="col-3" id="Name"/>
+            </div>
+            <div class="row">
+                    <label class="col-2">Дата рождения</label>
+                    <input type="date" class="col-3" id="BDay"/>
+            </div>
+            <div class="row">
+                    <button class="col-2" onclick="Post()">POST</button>
+                    <button class="col-2" onclick="Delete()">DELETE</button>
+            </div>
+        </div>
+        <script>
+                function Post() {
+                    let ID = document.getElementById("ID");
+                    let Name = document.getElementById("Name");
+                    let BDay = document.getElementById("BDay");
+                    
+                    // Если поле идентификатора пусто
+                    if (!ID.value) {
+                        fetch('http://localhost:5000/api/db', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(
+                                { 
+                                    name: Name.value,
+                                    bday: BDay.value
+                                }
+                            )
+                        })
+                        .then(response => { 
+                            return response.json(); 
+                        })
+                        .then(pdate => {
+                            console.log('POST.pdata', pdata);
+                        });
+                    } else {
+                        fetch('http://localhost:5000/api/db', {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(
+                                { 
+                                    id: ID.value,
+                                    name: Name.value,
+                                    bday: BDay.value
+                                }
+                            )
+                        });
+                    }
+                }
+
+                function Delete() {
+                    let ID = document.getElementById("ID");
+                    
+                    if (ID.value) {
+                        fetch(`http://localhost:5000/api/db?id=${ID.value}`, {
+                            method: 'DELETE'
+                        })
+                        .then(response => { 
+                            return response.json(); 
+                        })
+                        .then(pdate => {
+                            console.log('DELETE.pdata', pdata);
+                        });
+                    }
+                }
+            </script>
+    </body>
+</html>
