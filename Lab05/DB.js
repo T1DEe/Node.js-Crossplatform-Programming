@@ -40,7 +40,7 @@ dbData = [
 
         //COMMIT request method
         this.commit = () => {
-            console.log("Success commit.")
+            process.stdout.write('Success commit. \n');
             return 0;
         };
 

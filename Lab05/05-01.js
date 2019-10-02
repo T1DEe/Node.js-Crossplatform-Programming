@@ -5,7 +5,7 @@ const DB = require('./DB');
 
 let db = new DB();
 
-//===== слушатели =======================================
+//===== listeners =======================================
 db.on('GET', (request, response) => {
     response.end(JSON.stringify(db.getAllRows()));
 });
@@ -39,29 +39,68 @@ db.on('DELETE', (request, response) => {
 });
 
 db.on('COMMIT', () => {
-    let statusCode = db.commit();
-
-    console.log(statusCode)
+    db.commit();
+    
+    if (ssTimerId != null)
+        commitCounter += 1;
 } );
 
-// ===== сервер =========================================================
-http.createServer('request', (request, response) => {
+// ===== server statistic =============================================
+let statStartTime = null;
+let statFinishTime = null;
+let requestCounter = 0;
+let commitCounter = 0;
+
+function printStat() {
+    console.log('statistic start time: ' + statStartTime);
+    console.log('statistic finish time: ' + statFinishTime);
+    console.log('count of requests: ' + requestCounter);
+    console.log('count of commits: ' + commitCounter);
+}
+
+function getJsonStat() {
+    let jsonStat = JSON.stringify({
+        stat_start_time : statStartTime,
+        stat_finish_time : statFinishTime,
+        request_count : requestCounter,
+        commit_count : commitCounter
+    })
+
+    return jsonStat;
+}
+
+// ===== server =========================================================
+const server = http.createServer('request', (request, response) => {
     if (request.url === '/') {
         let html = fs.readFileSync('./05-01.html');
         response.writeHead(200, {'Content-Type':'text/html; charset=utf-8'});
         response.end(html);
+    } else if (request.url === '/api/ss') {
+        response.writeHead(200, {'Content-Type':'application/json'});
+        response.end(getJsonStat());
     } else if (url.parse(request.url).pathname === '/api/db') {
         db.emit(request.method, request, response); 
     }
+
+    if (ssTimerId != null)
+        requestCounter += 1;
 }).listen(5000)
 
-//===== ввод команд =====================================================
+
+//===== commands input =====================================================
 
 //да, генирация throws была бы куда лучше, но, знаете, cделайте сами
 // ибо мне лень. Это же просто лаба, да?.
 
 let sdTimerId = null;
-let scTimerId = null
+let scTimerId = null;
+let ssTimerId = null;
+
+// function closeServer() {
+//     server.close( ()=> {
+//         console.log('Server terminate.');
+//     });
+// }
 
 process.stdin.setEncoding('utf-8');
 process.stdin.on('readable', () => {
@@ -87,7 +126,9 @@ process.stdin.on('readable', () => {
                         sdTimerId = null;
                     }
 
+                    //sdTimerId = setTimeout(closeServer, num);
                     sdTimerId = setTimeout(process.exit, num);
+
                     break;
                 case 'sc':
                         if (scTimerId != null) {
@@ -95,10 +136,26 @@ process.stdin.on('readable', () => {
                             scTimerId = null;
                         }
     
-                        scTimerId = setInterval(db.commit, num);
+                        scTimerId = setInterval( () => {
+                            db.emit('COMMIT')
+                        }, num);
+                        scTimerId.unref();
                     break;
                 case 'ss':
-                    console.log('ss ' + num);
+                    if (ssTimerId != null) {
+                        clearInterval(ssTimerId);
+                        ssTimerId = null;
+                    }
+
+                    console.log('Statistics collection started.');
+                    ssTimerId = setTimeout( () => {
+                        statFinishTime = Date.now();
+
+                        console.log('Statistics collection finished.');
+                        printStat();
+                    }, num);
+                    statStartTime = Date.now(); 
+                    ssTimerId.unref();
                     break;
                 default:
                     console.error('Invalid command. Try again:');
@@ -108,21 +165,24 @@ process.stdin.on('readable', () => {
             switch (array[0]) {
                 case 'sd':
                     clearTimeout(sdTimerId);
+                    sdTimerId = null;
                     break;
                 case 'sc':
                     clearInterval(scTimerId);
+                    scTimerId = null;
                     break;
                 case 'ss':
-                    console.log('ss');
+                    clearInterval(ssTimerId);
+                    statFinishTime = Date.now();
+                    ssTimerId = null;
+                    
+                    console.log('Statistics collection finished.');
+                    printStat();
                     break;
                 default:
                     console.error('Invalid command. Try again:');
                     break;
             }
-        } else {
-            
         }
-        
-    }
-    
+    }   
 });
