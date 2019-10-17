@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <student>
+        <name>Artemy</name>
+        <surname>Markovsky</surname>
+        <speciality>POIT</speciality>
+        <course>3</course>
+        <group>4</group>
+    </student>
+    <student>
+        <name>Ilya</name>
+        <surname>Matsuev</surname>
+        <speciality>POIT</speciality>
+        <course>3</course>
+        <group>4</group>
+    </student>
+</root>

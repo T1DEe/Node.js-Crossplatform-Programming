@@ -4,7 +4,7 @@ const defaultHost = '';
 const defaultSender = '';
 const senderPass = '';
 
-module.exports.send = function send(message) {
+ module.exports.self = function send(message) {
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
       host: 'smtp.yandex.ru',
