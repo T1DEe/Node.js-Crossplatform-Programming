@@ -34,43 +34,49 @@ server.on('request', (request, response) => {
 
                 break;
             }
-            case 'headers': {
+            case '/headers': {
+                response.setHeader('X-CustomHeader','accept');
+                response.writeHead(200, {'Content-Type':'text/plant'});
+                
+                response.write('Request headers: ' + JSON.stringify(request.headers) + '\n');
+                response.write('Response headers: ' + JSON.stringify(response.getHeaders()) + '\n');
+               
+                response.end();
+                break;
+            }
+            case '/parameter': {
                 
                 break;
             }
-            case 'parameter': {
+            case '/parameterX': {
                 
                 break;
             }
-            case 'parameterX': {
+            case '/close': {
                 
                 break;
             }
-            case 'close': {
+            case '/socket': {
                 
                 break;
             }
-            case 'socket': {
+            case '/req-data': {
                 
                 break;
             }
-            case 'req-data': {
+            case '/resp-status': {
                 
                 break;
             }
-            case 'resp-status': {
+            case '/files': {
                 
                 break;
             }
-            case 'files': {
+            case '/filesX': {
                 
                 break;
             }
-            case 'filesX': {
-                
-                break;
-            }
-            case 'upload': {
+            case '/upload': {
                 
                 break;
             }
