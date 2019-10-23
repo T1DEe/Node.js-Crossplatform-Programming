@@ -53,7 +53,9 @@ server.on('request', (request, response) => {
                 break;
             }
             case '/close': {
-                
+                response.writeHead(200, {'Content-Type':'text/plant'});
+                response.end('The server will shutdown after 10 seconds');
+                setTimeout(() => server.close(), 10000)
                 break;
             }
             case '/socket': {
