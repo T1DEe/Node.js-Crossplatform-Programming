@@ -1,6 +1,7 @@
-const http = require('http')
-const fs = require('fs')
-const url = require('url')
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+
 
 const server = http.createServer()
 server.keepAliveTimeout = 10000
@@ -55,11 +56,23 @@ server.on('request', (request, response) => {
             case '/close': {
                 response.writeHead(200, {'Content-Type':'text/plant'});
                 response.end('The server will shutdown after 10 seconds');
-                setTimeout(() => server.close(), 10000)
+                setTimeout(() => server.close(), 10000);
                 break;
             }
             case '/socket': {
+                const serverInfo = server.address();
+
+                response.writeHead(200, {'Content-Type':'text/plant'});
                 
+                response.write('Server info: \n');
+                response.write('IP: ' + serverInfo.address + '\n' +
+                                'Port: ' + serverInfo.port + '\n');
+
+                response.write('Client info: \n');
+                response.write('IP: ' + request.connection.remoteAddress + '\n' +
+                                'Port: ' + request.connection.remotePort + '\n');
+
+                response.end();
                 break;
             }
             case '/req-data': {
@@ -111,13 +124,6 @@ server.on('request', (request, response) => {
 
 server.listen(5000)
 
-// function isEmpty(obj) {
-//     for(var key in obj) {
-//         if(obj.hasOwnProperty(key))
-//             return false;
-//     }
-//     return true;
-// }
 
 function isEmpty(obj) {
     if (JSON.stringify(obj) == "{}") {
