@@ -46,7 +46,31 @@ server.on('request', (request, response) => {
                 break;
             }
             case '/parameter': {
-                
+                const queryData = url.parse(request.url, true).query;
+                console.log(queryData)
+
+                if (isEmpty(queryData)) {
+                    response.writeHead(200, {'Content-Type': 'text/plant'});
+                    response.end('Invalid parameter.');
+                } else {
+                    const xValue = parseInt(queryData.x);
+                    const yValue = parseInt(queryData.y);
+
+                    if (typeof(xValue) != 'undefined' && typeof(yValue) != 'undefined' &&
+                                        Number.isInteger(xValue) && Number.isInteger(yValue)) {
+
+                        response.writeHead(200, {'Content-Type': 'text/plant'});
+                        response.write(xValue + yValue + '\n');
+                        response.write(xValue - yValue + '\n');
+                        response.write(xValue * yValue + '\n');
+                        response.write(xValue / yValue + '\n');
+                        response.end();
+                    } else {
+                        response.writeHead(400, 'Invalid "x" or "y" parameter value.');
+                        response.end();
+                    }
+                }
+
                 break;
             }
             case '/parameterX': {
