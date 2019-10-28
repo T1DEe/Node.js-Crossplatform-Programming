@@ -100,11 +100,32 @@ server.on('request', (request, response) => {
                 break;
             }
             case '/req-data': {
-                
+
                 break;
             }
             case '/resp-status': {
-                
+                const queryData = url.parse(request.url, true).query;
+                console.log(queryData)
+
+                if (isEmpty(queryData)) {
+                    response.writeHead(200, {'Content-Type': 'text/plant'});
+                    response.end('Invalid parameter.');
+                } else {
+                    const codeValue = parseInt(queryData.code);
+                    const messValue = queryData.mess;
+
+                    if (typeof(codeValue) != 'undefined' && Number.isInteger(codeValue)) {
+
+                        response.writeHead(200, {'Content-Type': 'text/plant'});
+                        response.write(codeValue + ': ');
+                        response.write(messValue + '\n');
+                        response.end();
+                    } else {
+                        response.writeHead(400, 'Invalid "code" or "mess" parameter value.');
+                        response.end();
+                    }
+                }
+
                 break;
             }
             case '/files': {
