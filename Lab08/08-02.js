@@ -130,6 +130,11 @@ server.on('request', (request, response) => {
             }
             case '/files': {
                 
+                fs.readdir('./', (err, files) => {
+                    response.writeHead(200, {'Content-Type': 'text/plain'});
+                    response.end(files.length + '');
+                });
+
                 break;
             }
             case '/filesX': {
@@ -159,10 +164,6 @@ server.on('request', (request, response) => {
                 break;
             }
             case '/json': {
-                if (request.method != "POST") 
-                    break;
-
-                response.writeHead(200, {'Content-Type': 'application/json'});
 
                 var data = '';
                 var jsonObj;
@@ -182,6 +183,8 @@ server.on('request', (request, response) => {
                     }
 
                     requestJsonObj = JSON.stringify(requestObj);
+
+                    response.writeHead(200, {'Content-Type': 'application/json'});
                     response.end(requestJsonObj);
                 });
 
@@ -189,6 +192,24 @@ server.on('request', (request, response) => {
             }
             case '/xml': {
                 
+                var data = '';
+                var xmlObj;
+
+                request.on('data', chunk => {
+                    data += chunk;
+                });
+                request.on('end', () => {
+                    console.log(data);
+                    
+                    const DOMParser = require('xmldom').DOMParser;
+                    var parser = new DOMParser();
+                    var xmlObj = parser.parseFromString(data, 'text/xml');
+
+                    //console.log(xmlObj.getElementsByTagName("request")[0].childNodes[0].nodeValue);
+
+                    response.writeHead(200, {'Content-Type': 'application/xml'});
+                    response.end();
+                });
                 break;
             }
             case '/upload': {
