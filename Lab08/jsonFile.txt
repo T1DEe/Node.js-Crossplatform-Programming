@@ -1,0 +1,8 @@
+{
+	"__comment": "request Lab08 json",
+	"x": 1,
+	"y": 2,
+	"s": "Message",
+	"m": ["a", "b", "c"],
+	"o": {"surname": "Markovsky", "name": "Artemy"}
+}

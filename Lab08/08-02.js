@@ -152,24 +152,46 @@ server.on('request', (request, response) => {
                     data += chunk;
                 });
                 request.on('end', () => {
-                    console.log(data);
-                    
+                    console.log(data); 
+                    response.end(data);
                 });
 
-                response.write(data);
-                response.end();
+                break;
+            }
+            case '/json': {
+                if (request.method != "POST") 
+                    break;
+
+                response.writeHead(200, {'Content-Type': 'application/json'});
+
+                var data = '';
+                var jsonObj;
+
+                request.on('data', chunk => {
+                    data += chunk;
+                });
+                request.on('end', () => {
+                    jsonObj = JSON.parse(data);
+                    console.log(jsonObj);
+
+                    var requestObj = {
+                        __comment: "response Lab08 json",
+                        x_plus_y: jsonObj.x + jsonObj.y,
+                        Concatination_s_o: jsonObj.s + jsonObj.o.surname + jsonObj.o.name,
+                        Length_m: jsonObj.m.length
+                    }
+
+                    requestJsonObj = JSON.stringify(requestObj);
+                    response.end(requestJsonObj);
+                });
 
                 break;
             }
-            case 'json': {
+            case '/xml': {
                 
                 break;
             }
-            case 'xml': {
-                
-                break;
-            }
-            case 'upload': {
+            case '/upload': {
                 
                 break;
             }
