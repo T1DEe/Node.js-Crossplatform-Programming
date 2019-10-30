@@ -143,6 +143,10 @@ server.on('request', (request, response) => {
             }
             case '/upload': {
                 
+                const html = fs.readFileSync('upload-form.html');
+                
+                response.writeHead(200, {'Content-Type': 'text/html'});
+                response.end(html);
                 break;
             }
         }
@@ -213,7 +217,22 @@ server.on('request', (request, response) => {
                 break;
             }
             case '/upload': {
+                const formidable = require('formidable');
                 
+                var form = new formidable.IncomingForm();
+                form.parse(request, function (err, fields, files) {
+                    
+                    var oldpath = files.filetoupload.path;
+                    var newpath = './' + files.filetoupload.name;
+
+                    fs.rename(oldpath, newpath, function (err) {
+                        if (err) throw err;
+                        
+                        response.write('File uploaded.');
+                        response.end();
+                    });
+                });
+
                 break;
             }
         }
