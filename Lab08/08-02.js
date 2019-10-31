@@ -12,6 +12,36 @@ server.on('connection', (socket) => {
 
 server.on('request', (request, response) => {
     if (request.method == 'GET') {
+        let pathArray = url.parse(request.url, true).pathname.split('/');
+        console.log(pathArray);
+            
+        if (pathArray[1] == 'files' && pathArray.length == 3) {
+            let fileName = pathArray[2];
+            let filePath = `./${fileName}`;
+            
+            fs.access(filePath, fs.constants.R_OK, err => {
+                if(err) {
+                    response.writeHead(404, 'File not found.');
+                    response.end();
+                } 
+                else {
+                    // ?????????????????
+                    // ?????????????????
+                }
+            });
+        } else if (pathArray[1] == 'parameter' && pathArray.length == 4 &&
+         Number.isInteger(parseInt(pathArray[2])) && Number.isInteger(parseInt(pathArray[3])) ) {
+            let xValue = parseInt(pathArray[2]);
+            let yValue = parseInt(pathArray[3]);
+
+            response.writeHead(200, {'Content-Type': 'text/plain'});
+            response.write(xValue + yValue + '\n');
+            response.write(xValue - yValue + '\n');
+            response.write(xValue * yValue + '\n');
+            response.write(xValue / yValue + '\n');
+            response.end();
+         }
+
         switch (url.parse(request.url).pathname) {
             case '/connection': {
                 const queryData = url.parse(request.url, true).query;
@@ -101,6 +131,15 @@ server.on('request', (request, response) => {
             }
             case '/req-data': {
 
+                let data = [];
+                request.on('data', chunk => {
+                    data.push(chunk);
+                });
+                request.on('end', () => {
+                    console.log(data);
+                    response.end();
+                });
+
                 break;
             }
             case '/resp-status': {
@@ -137,10 +176,6 @@ server.on('request', (request, response) => {
 
                 break;
             }
-            case '/filesX': {
-                
-                break;
-            }
             case '/upload': {
                 
                 const html = fs.readFileSync('upload-form.html');
@@ -156,7 +191,7 @@ server.on('request', (request, response) => {
             case '/formparameter': {
                 response.writeHead(200, {'Content-Type': 'text/plain'});
 
-                var data = '';
+                let data = '';
                 request.on('data', chunk => {
                     data += chunk;
                 });
@@ -169,8 +204,8 @@ server.on('request', (request, response) => {
             }
             case '/json': {
 
-                var data = '';
-                var jsonObj;
+                let data = '';
+                let jsonObj;
 
                 request.on('data', chunk => {
                     data += chunk;
@@ -179,7 +214,7 @@ server.on('request', (request, response) => {
                     jsonObj = JSON.parse(data);
                     console.log(jsonObj);
 
-                    var requestObj = {
+                    let requestObj = {
                         __comment: "response Lab08 json",
                         x_plus_y: jsonObj.x + jsonObj.y,
                         Concatination_s_o: jsonObj.s + jsonObj.o.surname + jsonObj.o.name,
@@ -196,8 +231,8 @@ server.on('request', (request, response) => {
             }
             case '/xml': {
                 
-                var data = '';
-                var xmlObj;
+                let data = '';
+                let xmlObj;
 
                 request.on('data', chunk => {
                     data += chunk;
@@ -206,10 +241,11 @@ server.on('request', (request, response) => {
                     console.log(data);
                     
                     const DOMParser = require('xmldom').DOMParser;
-                    var parser = new DOMParser();
-                    var xmlObj = parser.parseFromString(data, 'text/xml');
+                    let parser = new DOMParser();
+                    let xmlObj = parser.parseFromString(data, 'text/xml');
 
-                    //console.log(xmlObj.getElementsByTagName("request")[0].childNodes[0].nodeValue);
+                    //????????????????????
+                    //????????????????????
 
                     response.writeHead(200, {'Content-Type': 'application/xml'});
                     response.end();
@@ -219,11 +255,11 @@ server.on('request', (request, response) => {
             case '/upload': {
                 const formidable = require('formidable');
                 
-                var form = new formidable.IncomingForm();
+                let form = new formidable.IncomingForm();
                 form.parse(request, function (err, fields, files) {
                     
-                    var oldpath = files.filetoupload.path;
-                    var newpath = './' + files.filetoupload.name;
+                    let oldpath = files.filetoupload.path;
+                    let newpath = './' + files.filetoupload.name;
 
                     fs.rename(oldpath, newpath, function (err) {
                         if (err) throw err;
@@ -236,7 +272,6 @@ server.on('request', (request, response) => {
                 break;
             }
         }
-
     } else {
 
     }
