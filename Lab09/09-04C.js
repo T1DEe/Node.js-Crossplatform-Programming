@@ -1,8 +1,16 @@
 const http = require('http');
-const query = require('querystring');
 
-let params = JSON.stringify({x: 200, y: 100, s: 'ssssss'});
-let path = '/09-03';
+let reqJsonObj = {
+	__comment: "request 09-04",
+	x: 1,
+	y: 2,
+	s: "Message",
+	m: ["a", "b", "c"],
+	o: {"surname": "Markovsky", "name": "Artemy"}
+}
+
+let data = JSON.stringify(reqJsonObj);
+let path = '/09-04';
 
 let options = {
     hostname : 'localhost',
@@ -25,10 +33,12 @@ const req = http.request(options, (response) => {
         data += chunk;
     });
     response.on('end', () => {
-        console.log(data);
+        resJsonObj = JSON.parse(data);
+        console.log(resJsonObj);
     });
 
 });
 
-req.write(params);
+req.write(data);
 req.end();
+

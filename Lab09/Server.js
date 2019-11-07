@@ -1,4 +1,5 @@
 const http = require('http');
+const fs = require('fs');
 const url = require('url');
 const query = require('querystring');
 
@@ -26,8 +27,14 @@ server.on('request', (request, response) => {
                     response.end();
                 }
             }
+            case '/09-07': {
 
+                response.writeHead(200, {'Content-Type': 'image/jpeg'});
+                let file = fs.readFileSync('./pic.jpeg')
+                response.end(file);
 
+                break;
+            }
         }
     } else if (request.method == 'POST') {
         switch (url.parse(request.url, true).pathname) {
@@ -56,34 +63,42 @@ server.on('request', (request, response) => {
             case '/09-04': {
 
                 let data = '';
-                let jsonObj;
+                let reqJsonObj;
 
                 request.on('data', chunk => {
                     data += chunk;
                 });
                 request.on('end', () => {
-                    jsonObj = JSON.parse(data);
-                    console.log(jsonObj);
+                    reqJsonObj = JSON.parse(data);
+                    console.log(reqJsonObj);
 
-                    let requestObj = {
+                    let resJsonObj = {
                         __comment: "response 09-04",
-                        x_plus_y: jsonObj.x + jsonObj.y,
-                        Concatination_s_o: jsonObj.s + jsonObj.o.surname + jsonObj.o.name,
-                        Length_m: jsonObj.m.length
+                        x_plus_y: reqJsonObj.x + reqJsonObj.y,
+                        Concatination_s_o: reqJsonObj.s + reqJsonObj.o.surname + reqJsonObj.o.name,
+                        Length_m: reqJsonObj.m.length
                     }
 
-                    requestJsonObj = JSON.stringify(requestObj);
-
                     response.writeHead(200, {'Content-Type': 'application/json'});
-                    response.end(requestJsonObj);
+                    response.end(JSON.stringify(resJsonObj));
                 });
 
                 break;
             }
             case '/09-06': {
-                
-            }
 
+                let data = '';
+
+                request.on('data', chunk => {
+                    data += chunk;
+                });
+                request.on('end', () => {
+                    
+                    response.writeHead(200, {'Content-Type': 'text/plain'});
+                    response.end(data);
+                });
+                break;
+            }
         }
     }
 
