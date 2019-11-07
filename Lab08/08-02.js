@@ -103,10 +103,6 @@ server.on('request', (request, response) => {
 
                 break;
             }
-            case '/parameterX': {
-                
-                break;
-            }
             case '/close': {
                 response.writeHead(200, {'Content-Type':'text/plain'});
                 response.end('The server will shutdown after 10 seconds');
